@@ -5,7 +5,7 @@
 ;;     This evaluates to 14
 ;; (b)
 (list 1 (+ 2 3))
-;;     This evaluates to (1 5).  (The (+ 1 3) subexpression is evaluated and passed to the list function.)
+;;     This evaluates to (1 5).
 ;; (c)
 (if (listp 1) (+ 1 2) (+ 3 4))
 ;;     This returns 7 (i.e. (+ 3 4))
@@ -122,3 +122,37 @@
           (let ((count (count-a (cdr lst))))
             (+ count 1))
         0)))
+;; EXERCISE NINE:
+;; A friend is trying to write a function that returns the sum of all the
+;; non-nil elements in a list. He has written two versions of this function
+;; and neither of them work. Explain what's wrong with each and give a correct
+;; version.
+;; (a)
+(defun summit (lst)
+  (remove nil lst)
+  (apply #'+ lst))
+
+;; (b)
+(defun summit (lst)
+  (let ((x (car lst)))
+    (if (null x)
+        (summit (cdr lst))
+        (+ x (summit (cdr lst)))))
+
+;; (a) this code assumes that the value of lst will be modified
+;; after (remove nil lst) is called. This is not true.
+;; Instead (remove nil lst) returns a new value.
+;; It can be fixed as follows:
+
+(defun summit (lst)
+  (apply #'+ (remove nil lst)))
+
+;; (b) This code has no 'base case' for handling when lst is nil.
+;; It can be fixed as follows:
+(defun summit (lst)
+  (if (null lst)
+      0
+      (let ((x (car lst)))
+         (if (null x)
+             (summit (cdr lst))
+             (+ x (summit (cdr lst)))))))
